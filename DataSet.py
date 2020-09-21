@@ -119,7 +119,7 @@ class DataSet:
         # Get the data in batches of 50 ids.
 
         self.sql = 'select * from "' + self.table_name + \
-                    '" where "REGISTRY_ID" in (' + id_list + ')'
+                    '" where "REGISTRY_ID" in (' + ee_ids + ')'
 
         program_data = None
         
