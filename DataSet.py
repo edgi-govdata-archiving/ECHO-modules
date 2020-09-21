@@ -10,8 +10,8 @@ from DataSetResults import DataSetResults
 def get_data( sql, index_field=None ):
     url= 'http://portal.gss.stonybrook.edu/echoepa/?query=' #'http://apps.tlt.stonybrook.edu/echoepa/?query=' 
     data_location=url+urllib.parse.quote_plus(sql) + '&pg'
-    # print( sql )
-    # print( data_location )
+    print( sql )
+    print( data_location )
     if ( index_field == "REGISTRY_ID" ):
         ds = pd.read_csv(data_location,encoding='iso-8859-1', 
                  dtype={"REGISTRY_ID": "Int64"})
@@ -113,11 +113,14 @@ class DataSet:
         return program_data
 
     def get_data_by_ee_ids( self, ee_ids, int_flag=False ):
+        # ee_ids should be a list of ECHO_EXPORTER.REGISTRY_ID
         # The id_string can get very long for a state or even a county.
         # That can result in an error from too big URI.
         # Get the data in batches of 50 ids.
 
-        id_string = ""
+        self.sql = 'select * from "' + self.table_name + \
+                    '" where "REGISTRY_ID" in (' + id_list + ')'
+
         program_data = None
         
         if ( ee_ids is None ):
@@ -153,6 +156,54 @@ class DataSet:
                     program_data = pd.concat([ program_data, data ])
         
         print( "{} ids were searched for".format( str( ee_ids_len )))
+        if ( program_data is None ):
+            print( "No program records were found." )
+        else:
+            print( "{} program records were found".format( str( len( program_data ))))        
+        return program_data
+
+    def get_data_by_pgm_ids( self, pgm_ids, int_flag=False ):
+        # pgm_ids should be a list of the data set's idx_field values
+        # The id_string can get very long for a state or even a county.
+        # That can result in an error from too big URI.
+        # Get the data in batches of 50 ids.
+
+        id_string = ""
+        program_data = None
+        
+        if ( pgm_ids is None ):
+            return None
+        else:
+            pgm_ids_len = len( pgm_ids )
+
+        pos = 0
+        for pos,row in enumerate( pgm_ids ):
+            if ( not int_flag ):
+                id_string += "'"
+            id_string += str(row)
+            if ( not int_flag ):
+                id_string += "'"
+            id_string +=  ","
+            if ( pos % 50 == 0 ):
+                id_string=id_string[:-1] # removes trailing comma
+                data = self._try_get_data( id_string )   
+                if ( data is not None ):
+                    if ( program_data is None ):
+                        program_data = data
+                    else:
+                        program_data = pd.concat([ program_data, data ])
+                id_string = ""
+
+        if ( pos % 50 != 0 ):
+            id_string=id_string[:-1] # removes trailing comma
+            data = self._try_get_data( id_string )
+            if ( data is not None ):
+                if ( program_data is None ):
+                    program_data = data
+                else:
+                    program_data = pd.concat([ program_data, data ])
+        
+        print( "{} ids were searched for".format( str( pgm_ids_len )))
         if ( program_data is None ):
             print( "No program records were found." )
         else:
