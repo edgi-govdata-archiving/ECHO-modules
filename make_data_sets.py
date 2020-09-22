@@ -85,14 +85,14 @@ def make_data_sets( data_set_list = None ):
                         unit="inspections") 
                         # For possible later use in assessing state v federal )
         data_sets[ ds.name ] = ds
-    ds_name = 'Combined Air Emissions'
-    if ( data_set_list is None or ds_name in data_set_list ):
-        ds = DataSet( name=ds_name, echo_type=["GHG","TRI"],
-                        base_table='POLL_RPT_COMBINED_EMISSIONS',
-                        table_name='COMBINED_AIR_EMISSIONS_MVIEW', 
-                        idx_field='REGISTRY_ID', date_field='REPORTING_YEAR', 
-                        date_format='%Y' )
-        data_sets[ ds.name ] = ds
+    # ds_name = 'Combined Air Emissions'
+    # if ( data_set_list is None or ds_name in data_set_list ):
+    #     ds = DataSet( name=ds_name, echo_type=["GHG","TRI"],
+    #                     base_table='POLL_RPT_COMBINED_EMISSIONS',
+    #                     table_name='COMBINED_AIR_EMISSIONS_MVIEW', 
+    #                     idx_field='REGISTRY_ID', date_field='REPORTING_YEAR', 
+    #                     date_format='%Y' )
+    #     data_sets[ ds.name ] = ds
     ds_name = 'Greenhouse Gas Emissions'
     if ( data_set_list is None or ds_name in data_set_list ):
         ds = DataSet( name=ds_name, echo_type="GHG",
